@@ -1,0 +1,22 @@
+# All scripts designed to be run from root dir
+SCRIPT_DIR="$(dirname $0)"
+
+# repo urls
+LINUX_SRC_URL="https://github.com/severifast/linux"
+QEMU_SRC_URL="https://github.com/severifast/qemu"
+
+# source tree dirs
+SRC_TREE_DIR="${SCRIPT_DIR}/../src"
+LINUX_SRC_DIR="${SRC_TREE_DIR}/linux"
+QEMU_SRC_DIR="${SRC_TREE_DIR}/qemu"
+
+# paths to guest kernel configs
+CONFIGS_DIR="${SCRIPT_DIR}/../kernel-configs"
+# kernel builds
+BZIMAGE_BUILD="${LINUX_SRC_DIR}/arch/x86/boot/bzImage"
+VMLINUX_BUILD="${LINUX_SRC_DIR}/arch/x86/boot/compressed/vmlinux.bin"
+# dir for all guest kernels
+KERNELS_DIR="${SCRIPT_DIR}/../kernels"
+
+# qemu build path
+QEMU_BUILD="${QEMU_SRC_DIR}/build/qemu-system-x86_64"
