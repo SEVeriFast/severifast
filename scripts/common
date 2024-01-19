@@ -1,16 +1,22 @@
 # All scripts designed to be run from root dir
 SCRIPT_DIR="$(dirname $(readlink -f $0))"
+ROOT_DIR="${SCRIPT_DIR}/../"
+BIN_DIR="${ROOT_DIR}/bin"
 
 # repo urls
 LINUX_SRC_URL="https://github.com/severifast/linux"
 QEMU_SRC_URL="https://github.com/severifast/qemu"
 FC_SRC_URL="https://github.com/severifast/firecracker"
+FW_SRC_URL="https://github.com/bencw12/rust-hypervisor-firmware"
+OVMF_SRC_URL="https://github.com/bencw12/ovmf"
 
 # source tree dirs
 SRC_TREE_DIR="${SCRIPT_DIR}/../src"
 LINUX_SRC_DIR="${SRC_TREE_DIR}/linux"
 QEMU_SRC_DIR="${SRC_TREE_DIR}/qemu"
 FC_SRC_DIR="${SRC_TREE_DIR}/firecracker"
+FW_SRC_DIR="${SRC_TREE_DIR}/rust-hypervisor-firmware"
+OVMF_SRC_DIR="${SRC_TREE_DIR}/ovmf"
 
 # paths to guest kernel configs
 CONFIGS_DIR="${SCRIPT_DIR}/../kernel-configs"
@@ -24,4 +30,11 @@ KERNELS_DIR="${SCRIPT_DIR}/../kernels"
 QEMU_BUILD="${QEMU_SRC_DIR}/build/qemu-system-x86_64"
 
 # firecracker build path
-FC_BUILD="${FC_SRC_DIR}/build/cargo_target/release/x86_64-unknown-linux-musl/release/firecracker"
+FC_BUILD="${FC_SRC_DIR}/build/cargo_target/x86_64-unknown-linux-musl/release/firecracker"
+
+# rust firmware build path
+FW_BUILD="${BIN_DIR}/snp-fw.bin"
+FW_BUILD_DIRECT_BOOT="${BIN_DIR}/snp-direct-boot-fw.bin"
+
+# ovmf build path
+OVMF_BUILD="${OVMF_SRC_DIR}/Build/AmdSev/RELEASE_GCC5/FV/OVMF.fd"
