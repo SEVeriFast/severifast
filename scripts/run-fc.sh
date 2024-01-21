@@ -141,6 +141,18 @@ build_vm_cfg() {
         SEV_CONF="  \"sev-config\": null,"
     fi
 
+
+    if ! [ "$NO_NET" == "1" ]; then
+	NET_DEV_CONF=$(echo " \"network-interfaces\": ["\
+			    "{"\
+			    "\"iface_id\": \"eth0\","\
+			    "\"guest_mac\": \"AA:FC:00:00:00:01\","\
+			    "\"host_dev_name\": \"${NET_DEV}\""\
+			    "}],")
+    else
+	NET_DEV_CONF="\"network-interfaces\": [],"
+    fi	
+
     #edit vm config file with new params
     KERNEL_CONF="    \"kernel_image_path\": \"${KERNEL}\","
     if [ -f "${INITRD}" ]; then
@@ -152,7 +164,6 @@ build_vm_cfg() {
     ROOTFS_CONF="      \"path_on_host\": \"${ROOTFS}\","
     BOOT_ARGS_CONF="    \"boot_args\": \"$CMDLINE\","
     MEM_CONF="    \"mem_size_mib\": ${MEM_SIZE},"
-    NET_DEV_CONF="    \"host_dev_name\": \"${NET_DEV}\""
     # copy base config and replace args
     cat ${FC_CONFIG_BASE} | 
     sed "s|.*kernel_image_path.*|${KERNEL_CONF}|" |
@@ -161,7 +172,7 @@ build_vm_cfg() {
     sed "s|.*boot_args.*|${BOOT_ARGS_CONF}|" |
     sed "s|.*mem_size_mib.*|${MEM_CONF}|" |
     sed "s|.*hugepages.*|${HUGEPAGES}|" |
-    sed "s|.*host_dev_name.*|${NET_DEV_CONF}|" |
+    sed "s|.*network-interfaces.*|${NET_DEV_CONF}|" |
     sed "s|.*sev-config.*|${SEV_CONF}|" > ${FC_CONFIG}
 }
 
@@ -245,7 +256,7 @@ while [ -n "$1" ]; do
     -num)
         FC_LOG=/tmp/fc-log-$2.file
         FC_CONFIG=./fc-config/vm_config-$2.json
-        NET_DEV="tap$2"
+        #NET_DEV="tap$2"
         shift
         ;;
     -debug)
