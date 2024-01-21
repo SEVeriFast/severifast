@@ -2,13 +2,14 @@
 
 . ./scripts/common
 
+rm -rf ${ROOT_DIR}/certs
+
 mkdir -p ${ROOT_DIR}/certs
 mkdir -p ${ROOT_DIR}/certs/platform
 mkdir -p ${ROOT_DIR}/certs/guest
 mkdir -p ${ROOT_DIR}/certs/guest/launch
 mkdir -p ${ROOT_DIR}/certs/guest/launch/sev
 mkdir -p ${ROOT_DIR}/certs/guest/launch/sev-es
-
 
 # platform certs
 pushd ${ROOT_DIR}/certs/platform
