@@ -1,7 +1,7 @@
 #/bin/sh
 # dependencies for building linux
 sudo apt update
-sudo apt install -y build-essential flex bison libelf-dev libssl-dev lz4 ca-certificates curl gnupg ninja-build pkg-config libglib2.0-dev libpixman-1-dev nginx python-is-python3 mtools nasm iasl nginx fcgiwrap autoconf uuid-dev zip
+sudo apt install -y build-essential flex bison libelf-dev libssl-dev lz4 ca-certificates curl gnupg ninja-build pkg-config libglib2.0-dev libpixman-1-dev nginx python-is-python3 mtools nasm iasl nginx fcgiwrap autoconf uuid-dev zip debhelper dh-virtualenv libpfm4-dev libtraceevent-dev libtraceevent-devel
 # setup to install docker
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg

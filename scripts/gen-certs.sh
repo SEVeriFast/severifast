@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. ./scripts/common
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+. ${SCRIPT_DIR}/common
 
 rm -rf ${ROOT_DIR}/certs
 
