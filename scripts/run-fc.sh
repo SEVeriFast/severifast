@@ -201,6 +201,7 @@ cleanup() {
     fi    
     if [ "${ATTEST}" == "1" ]; then
 	sudo nginx -s stop 2>&1 > /dev/null
+	echo "" | sudo tee /var/www/cgi.log > /dev/null
     fi
 }
 
