@@ -1,5 +1,6 @@
 kernels/
 src/
+!toy-vmm/src
 bin/
 certs/
 fc-config/vm_config.json
