@@ -10,8 +10,6 @@ sudo chmod g+rw /dev/sev
 sudo chown :kvm /dev/kvm
 sudo chmod g+rw /dev/kvm
 
-sudo usermod -aG docker $USER
-
 [ $(stat -c "%G" /var/run/docker.sock) = docker ] && sudo usermod -aG docker ${USER} \
     && echo "Access granted to Docker"
 [ $(stat -c "%G" /dev/kvm) = kvm ] && sudo usermod -aG kvm ${USER} \
