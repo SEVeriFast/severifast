@@ -3,6 +3,7 @@ src/
 bin/
 certs/
 fc-config/vm_config.json
+fc-config/vm_config-*
 hashes/
 host/
 data/
