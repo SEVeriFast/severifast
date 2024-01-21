@@ -1,6 +1,7 @@
 #!/bin/bash
 
-. ./scripts/common
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+. ${SCRIPT_DIR}/common
 
 ROOTFS=${ROOT_DIR}/images/rootfs.ext4
 # default 256MB
@@ -16,12 +17,12 @@ POLCIY=1
 
 network_setup() {
     # create tap for guest
-    # sudo ip link del ${NET_DEV}
     HOST_IFACE=$(ip route | grep '^default' | awk '{ print $5 }')
+    MTU=$(ip addr | grep -m 1 eno8303 | awk '{ print $5 }')
     sudo ip tuntap add ${NET_DEV} mode tap
     sudo ip addr add 172.16.0.1/24 dev ${NET_DEV}
     sudo ip link set ${NET_DEV} up
-    sudo ip link set dev ${NET_DEV} mtu 1446
+    sudo ip link set dev ${NET_DEV} mtu ${MTU}
     echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward > /dev/null
     sudo iptables -t nat -A POSTROUTING -o "$HOST_IFACE" -j MASQUERADE
     sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
