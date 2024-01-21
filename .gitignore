@@ -4,3 +4,4 @@ bin/
 certs/
 fc-config/vm_config.json
 hashes/
+host/

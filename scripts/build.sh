@@ -1,12 +1,16 @@
 #!/bin/bash
 
-. ./scripts/common
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+. ${SCRIPT_DIR}/common
 
 build_guest_kernels()
 {
     ! [ -d ${LINUX_SRC_DIR} ] && {
-	git clone --single-branch --branch\
-	    snp-lazy-pvalidate-handlers ${LINUX_SRC_URL} ${LINUX_SRC_DIR}
+	git clone --depth 1 ${LINUX_SRC_URL} ${LINUX_SRC_DIR}
+	pushd ${LINUX_SRC_DIR}
+	git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+	git fetch --depth 1
+	popd
     }
 
     ! [ -d ${KERNELS_DIR} ] && {
@@ -19,6 +23,7 @@ build_guest_kernels()
 	       ${LINUX_SRC_DIR}/.config
 
 	    pushd ${LINUX_SRC_DIR}
+	    git checkout snp-lazy-pvalidate-handlers
 	    make -C ${LINUX_SRC_DIR} olddefconfig
 	    make -C ${LINUX_SRC_DIR}\
 		 -j$(getconf _NPROCESSORS_ONLN) bzImage
@@ -41,6 +46,49 @@ build_guest_kernels()
 	       ${KERNELS_DIR}/bzImage-${config%.*}-gzip
 
 	done
+    }
+}
+
+build_host_kernel()
+{
+    ! [ -d ${LINUX_SRC_DIR} ] && {
+	git clone --depth 1 ${LINUX_SRC_URL} ${LINUX_SRC_DIR}
+	pushd ${LINUX_SRC_DIR}
+	git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+	git fetch --depth 1
+	popd
+    }
+
+    ! [ -f ${HOST_KERNEL_BUILD_DIR}/linux-image-6.1.0-rc4-snp-host_* ] && {
+	pushd ${LINUX_SRC_DIR}
+	git checkout nx-hugepages-fix
+	popd
+	
+	echo "Building host kernel"
+	mkdir -p ${HOST_KERNEL_BUILD_DIR}
+	mkdir -p ${HOST_KERNEL_BUILD_DIR}/src
+	pushd ${HOST_KERNEL_BUILD_DIR}
+	make -C ${LINUX_SRC_DIR} mrproper
+	make -C ${LINUX_SRC_DIR} O=${HOST_KERNEL_BUILD_DIR}/src defconfig
+	pushd ${HOST_KERNEL_BUILD_DIR}/src
+	cp /boot/config-$(uname -r) .config
+	scripts/config --disable SYSTEM_TRUSTED_KEYS
+	scripts/config --disable SYSTEM_REVOCATION_KEYS
+	make olddefconfig
+	make -j $(nproc)
+	make -j $(nproc) bindeb-pkg LOCALVERSION=-snp-host DEB_DESTDIR=${HOST_KERNEL_BUILD_DIR}
+	popd
+	
+	echo "Installing host kernel"
+	sudo dpkg -i linux-headers*
+	sudo dpkg -i linux-image-6.1.0-rc4-snp-host_*
+	sudo dpkg -i linux-libc*
+	popd
+
+	pushd ${LINUX_SRC_DIR}/tools/perf
+	make -j $(nproc)
+	cp ./perf ${BIN_DIR}/
+	popd
     }
 }
 
@@ -195,7 +243,21 @@ build_snp_host() {
     } 
 }
 
+while [ -n "$1" ]; do
+    case "$1" in
+	-host) 
+            HOST=1
+            shift
+            ;;
+    esac
+    shift
+done
+
 mkdir -p ${SRC_TREE_DIR}
+
+if [ "${HOST}" = "1" ]; then
+   build_host_kernel
+fi
 
 build_guest_kernels
 build_qemu
