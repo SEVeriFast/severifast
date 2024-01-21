@@ -18,7 +18,6 @@ network_setup() {
     # create tap for guest
     # sudo ip link del ${NET_DEV}
     HOST_IFACE=$(ip route | grep '^default' | awk '{ print $5 }')
-    echo $HOST_IFACE
     sudo ip tuntap add ${NET_DEV} mode tap
     sudo ip addr add 172.16.0.1/24 dev ${NET_DEV}
     sudo ip link set ${NET_DEV} up
@@ -30,8 +29,8 @@ network_setup() {
 
     if [ "${ATTEST}" == "1" ]; then
 	# set init for doing attestation
-	sudo nginx -s stop 2>&1 > /dev/null
-	sudo nginx 2>&1 > /dev/null
+	sudo nginx -s stop > /dev/null 2>&1
+	sudo nginx > /dev/null 2>&1
     fi
 }
 
@@ -196,6 +195,15 @@ run_fc () {
         --no-seccomp
 }
 
+cleanup() {
+    if ! [ "$NO_NET" == "1" ]; then
+	sudo ip link del ${NET_DEV}
+    fi    
+    if [ "${ATTEST}" == "1" ]; then
+	sudo nginx -s stop 2>&1 > /dev/null
+    fi
+}
+
 while [ -n "$1" ]; do
 	case "$1" in
     -kernel) 
@@ -255,3 +263,4 @@ if ! [ "$NO_NET" == "1" ]; then
 fi
 setup
 run_fc
+cleanup
