@@ -206,3 +206,6 @@ build_kernel_hasher
 build_sev_tool
 build_sev_guest
 build_snp_host
+
+${ROOT_DIR}/scripts/gen-certs.sh
+${ROOT_DIR}/scripts/setup-attestation-server.sh
