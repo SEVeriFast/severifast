@@ -9,6 +9,9 @@ QEMU_SRC_URL="https://github.com/severifast/qemu"
 FC_SRC_URL="https://github.com/severifast/firecracker"
 FW_SRC_URL="https://github.com/bencw12/rust-hypervisor-firmware"
 OVMF_SRC_URL="https://github.com/bencw12/ovmf"
+SEV_TOOL_SRC_URL="https://github.com/AMDESE/sev-tool"
+SEV_GUEST_SRC_URL="https://github.com/AMDESE/sev-guest"
+SNP_HOST_SRC_URL="https://github.com/virtee/snphost"	
 
 # source tree dirs
 SRC_TREE_DIR="${SCRIPT_DIR}/../src"
@@ -17,6 +20,10 @@ QEMU_SRC_DIR="${SRC_TREE_DIR}/qemu"
 FC_SRC_DIR="${SRC_TREE_DIR}/firecracker"
 FW_SRC_DIR="${SRC_TREE_DIR}/rust-hypervisor-firmware"
 OVMF_SRC_DIR="${SRC_TREE_DIR}/ovmf"
+KERNEL_HASHER_DIR="${ROOT_DIR}/kernel-hasher"
+SEV_TOOL_SRC_DIR="${SRC_TREE_DIR}/sev-tool"
+SEV_GUEST_SRC_DIR="${SRC_TREE_DIR}/sev-guest"
+SNP_HOST_SRC_DIR="${SRC_TREE_DIR}/snphost"
 
 # paths to guest kernel configs
 CONFIGS_DIR="${SCRIPT_DIR}/../kernel-configs"
@@ -35,6 +42,10 @@ FC_BUILD="${FC_SRC_DIR}/build/cargo_target/x86_64-unknown-linux-musl/release/fir
 # rust firmware build path
 FW_BUILD="${BIN_DIR}/snp-fw.bin"
 FW_BUILD_DIRECT_BOOT="${BIN_DIR}/snp-direct-boot-fw.bin"
+ES_FW_BUILD="${BIN_DIR}/sev-es-fw.bin"
+ES_FW_BUILD_DIRECT_BOOT="${BIN_DIR}/sev-es-direct-boot-fw.bin"
 
 # ovmf build path
 OVMF_BUILD="${OVMF_SRC_DIR}/Build/AmdSev/RELEASE_GCC5/FV/OVMF.fd"
+
+KERNEL_HASHER=${KERNEL_HASHER_DIR}/target/release/kernel-hasher

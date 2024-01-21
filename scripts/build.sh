@@ -52,6 +52,7 @@ build_qemu()
     }
 
     ! [ -f ${QEMU_BUILD} ] && {
+	echo "Building QEMU"
 	pushd ${QEMU_SRC_DIR}
 	./configure --target-list=x86_64-softmmu
 	make -j$(getconf _NPROCESSORS_ONLN)
@@ -81,6 +82,7 @@ build_ovmf() {
     }
 
     ! [ -f ${OVMF_BUILD} ] && {
+	echo "Building OVMF"
 	pushd ${OVMF_SRC_DIR}
 	git checkout snp-timestamps
 	git submodule update --init --recursive
@@ -101,6 +103,7 @@ build_fw() {
     }
     
     ! [ -f ${FW_BUILD} ] && {
+	echo "Building SEV-SNP firmware"
 	source "$HOME/.cargo/env"
 	pushd ${FW_SRC_DIR}
 	git checkout sev-snp
@@ -110,6 +113,7 @@ build_fw() {
     }
 
     ! [ -f ${FW_BUILD_DIRECT_BOOT} ] && {
+	echo "Building SEV-SNP direct boot firmware"
 	source "$HOME/.cargo/env"
 	pushd ${FW_SRC_DIR}
 	git checkout sev-snp-direct-boot
@@ -117,6 +121,78 @@ build_fw() {
 	cp ./sev-fw.bin ${BIN_DIR}/snp-direct-boot-fw.bin
 	popd
     }
+
+    ! [ -f ${ES_FW_BUILD} ] && {
+	echo "Building SEV-ES firmware"
+	source "$HOME/.cargo/env"
+	pushd ${FW_SRC_DIR}
+	git checkout sev-es-rework
+	cargo b
+	cp ./sev-fw.bin ${BIN_DIR}/sev-es-fw.bin
+	popd
+    }
+
+    ! [ -f ${ES_FW_BUILD_DIRECT_BOOT} ] && {
+	echo "Building SEV-ES direct boot firmware"
+	source "$HOME/.cargo/env"
+	pushd ${FW_SRC_DIR}
+	git checkout sev-es-direct-boot
+	cargo b
+	cp ./sev-fw.bin ${BIN_DIR}/sev-es-direct-boot-fw.bin
+	popd
+    }
+}
+
+build_kernel_hasher() {
+    ! [ -f ${KERNEL_HASHER} ] && {
+	echo "Building kernel hasher"
+	source "$HOME/.cargo/env"
+	pushd ${KERNEL_HASHER_DIR}
+	cargo build --release
+	popd
+    }
+}
+
+build_sev_tool() {
+    ! [ -d ${SEV_TOOL_SRC_DIR} ] && {
+	git clone ${SEV_TOOL_SRC_URL} ${SEV_TOOL_SRC_DIR}
+    }
+    
+    ! [ -f /bin/sevtool ] && {
+	echo "Building sev-tool"
+	pushd ${SEV_TOOL_SRC_DIR}
+	autoreconf -vif && ./configure && make
+	sudo cp ./src/sevtool /bin/
+	popd
+    }
+}
+
+build_sev_guest() {
+    ! [ -d ${SEV_GUEST_SRC_DIR} ] && {
+	git clone ${SEV_GUEST_SRC_URL} ${SEV_GUEST_SRC_DIR}
+    }
+    
+    ! [ -f /bin/sev-guest-parse-report ] && {
+	echo "Building sev-guest"
+	pushd ${SEV_GUEST_SRC_DIR}
+	make -j $(nproc)
+	sudo cp ${SEV_GUEST_SRC_DIR}/sev-guest-parse-report /bin/
+	popd
+    }
+}
+
+build_snp_host() {
+    ! [ -d ${SNP_HOST_SRC_DIR} ] && {
+	git clone ${SNP_HOST_SRC_URL} ${SNP_HOST_SRC_DIR}
+    }
+    
+    ! [ -f ${BIN_DIR}/snphost ] && {
+	echo "Building snp-host"
+	pushd ${SNP_HOST_SRC_DIR}
+        cargo build --release
+	sudo cp ${SNP_HOST_SRC_DIR}/target/release/snphost ${BIN_DIR}
+	popd
+    } 
 }
 
 mkdir -p ${SRC_TREE_DIR}
@@ -126,3 +202,7 @@ build_qemu
 build_firecracker
 build_ovmf
 build_fw
+build_kernel_hasher
+build_sev_tool
+build_sev_guest
+build_snp_host
