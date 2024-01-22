@@ -268,10 +268,7 @@ done
 
 mkdir -p ${SRC_TREE_DIR}
 
-if [ "${HOST}" = "1" ]; then
-   build_host_kernel
-fi
-
+build_host_kernel
 build_guest_kernels
 build_qemu
 build_firecracker
