@@ -126,8 +126,6 @@ setup() {
         exit 1
     fi
 
-    echo "" > ${RESULTS_PATH}
-
     re='^[0-9]+$'
     if ! [[ $NUM_RUNS =~ $re ]] ; then
         echo "Invalid number of runs: $NUM_RUNS"
