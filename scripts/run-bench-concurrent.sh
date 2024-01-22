@@ -166,8 +166,7 @@ run_fc() {
 
     echo "Firecracker: spawning ${NUM_VMS} VMs $SNP"
     until [ $VMS -eq ${NUM_VMS} ]
-    do
-	echo "TEST"
+    do 
         if [ "$SEV" == "1" ]; then
             ./scripts/run-fc.sh -fw /tmp/tmp-fw.bin -no-net -snp -kernel ./kernels/bzImage-aws-6.4-lz4 -initrd ./images/initrd-aws-no-net.img -mem 256 -num ${VMS} 2>&1 > /dev/null  &
         else
@@ -190,8 +189,6 @@ run_fc() {
         else
             boot_time=$(grep "Debug code 0x41" /tmp/fc-log-${VMS}.file | awk '{print $7}' | sed 's/^0*//') 
         fi
-
-	cat /tmp/fc-log-${VMS}.file
 	
         # just echoing every VMs boot time
         if [ "$SEV" == "1" ]; then
