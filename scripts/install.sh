@@ -23,3 +23,5 @@ source "$HOME/.cargo/env"
 # dependencies for building firmware
 cargo install cargo-binutils
 rustup component add llvm-tools-preview
+
+sudo ${SCRIPT_DIR}/cfg_groups.sh
