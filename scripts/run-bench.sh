@@ -417,12 +417,12 @@ setup
 # warm up
 echo -n "Warming cache..."
 if [ "${QEMU}" == "1" ]; then
-    for ((i = 0 ; i < 5 ; i++ )); do
+    for ((n = 0 ; n < 5 ; n++ )); do
 	perf_bench_qemu
     done
 elif [ "${FC}" == "1" ]; then
-    for ((i = 0 ; i < 5 ; i++ )); do
-	$FC_RUN 2>&1 > /dev/null 
+    for ((n = 0 ; n < 5 ; n++ )); do
+	$FC_RUN > /dev/null 2>&1
     done
 else
     echo "Error warming buffer cache"
@@ -431,14 +431,14 @@ fi
 echo ""
 
 # Run experiment
-for ((i = 0 ; i < ${NUM_RUNS} ; i++ )); do
-    echo -n "Booting $(basename ${KERNEL}) with ${TYPE} and ${SEV:1}: ${i+1}/${NUM_RUNS}"
+for ((n = 1 ; n <= ${NUM_RUNS} ; n++ )); do
+    echo -n "Booting $(basename ${KERNEL}) with ${TYPE} and ${SEV:1}: ${n}/${NUM_RUNS}"
     echo -ne '\r'
     if [ "${QEMU}" == "1" ]; then
         perf_bench_qemu
         parse_results_qemu
     elif [ "${FC}" == "1" ]; then
-        $FC_RUN 2>&1 > /dev/null 
+        $FC_RUN > /dev/null 2>&1 
         parse_results_fc
     else
         echo "Invalid VMM type"

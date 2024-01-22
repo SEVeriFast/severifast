@@ -11,3 +11,4 @@ data/
 graphs/
 images/*gzip.img
 images/*lz4.img
+figs/
