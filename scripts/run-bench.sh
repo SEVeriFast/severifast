@@ -166,7 +166,7 @@ perf_bench_qemu () {
     sleep 1
 
     # run qemu
-    ${QEMU_RUN} #2>&1 > /dev/null 
+    ${QEMU_RUN} 2>&1 > /dev/null
     
     sudo pkill perf 2>&1 > /dev/null 
     wait ${PERF_PID}
