@@ -27,6 +27,19 @@ build_guest_kernels()
 	    make -C ${LINUX_SRC_DIR} olddefconfig
 	    make -C ${LINUX_SRC_DIR}\
 		 -j$(getconf _NPROCESSORS_ONLN) bzImage
+
+	    make -C ${LINUX_SRC_DIR} -j$(nproc) ./drivers/virt/coco/sev-guest/sev-guest.ko
+	    mkdir -p /tmp/mnt
+	    pushd /tmp/mnt
+	    cfg=$(echo $config | cut -d- -f1)
+	    initrd=initrd-$cfg.img
+	    cpio -iv < ${ROOT_DIR}/images/$initrd
+	    cp ${LINUX_SRC_DIR}/drivers/virt/coco/sev-guest/sev-guest.ko ./lib/modules/6.4.0-rc6+/kernel/drivers/virt/coco/sev-guest/
+	    find . 2>/dev/null | cpio --create --format='newc' > ${ROOT_DIR}/images/$initrd
+	    rm -rf /tmp/mnt
+	    popd
+	    gzip -c ${ROOT_DIR}/images/$initrd > ${ROOT_DIR}/images/initrd-$cfg-gzip.img
+	    lz4 -lc ${ROOT_DIR}/images/$initrd > ${ROOT_DIR}/images/initrd-$cfg-lz4.img
 	    popd
 
 	    cp ${BZIMAGE_BUILD}\
