@@ -8,3 +8,6 @@ fc-config/vm_config-*
 hashes/
 host/
 data/
+graphs/
+images/*gzip.img
+images/*lz4.img
