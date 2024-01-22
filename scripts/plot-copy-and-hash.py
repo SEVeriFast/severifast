@@ -148,7 +148,7 @@ def plot_all():
 
     parse_data(AWS_BZIMAGE_DATA, fig, ax, x_coord=3.4, sev=True,firmware=True,  initrd=True, legend=True)
     parse_data(AWS_LZ4_INITRD, fig, ax, x_coord=3.7,  initrd=True)
-    parse_data(AWS_BZIMAGE_DATA, fig, ax, x_coord=4,  initrd=True)
+    parse_data(AWS_GZIP_DATA, fig, ax, x_coord=4,  initrd=True)
 
     trans = ax.get_xaxis_transform()
 
