@@ -73,3 +73,14 @@ ${SCRIPT_DIR}/run-pre-enc.sh
 
 echo "########## Concurrent boot ##########"
 ${SCRIPT_DIR}/run-bench-concurrent.sh
+
+echo "Generating figs"
+
+${SCRIPT_DIR}/plot-pre-encrypt.py
+${SCRIPT_DIR}/plot-ovmf-breakdown.py
+${SCRIPT_DIR}/plot-copy-and-hash.py
+${SCRIPT_DIR}/plot-severifast-vs-qemu.py
+${SCRIPT_DIR}/plot-severifast-vs-stock-fc.py
+${SCRIPT_DIR}/plot-concurrent-boot.py
+
+echo "Done"
