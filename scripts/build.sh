@@ -64,45 +64,40 @@ build_guest_kernels()
 
 build_host_kernel()
 {
-    ! [ -d ${LINUX_SRC_DIR} ] && {
-	git clone --depth 1 ${LINUX_SRC_URL} ${LINUX_SRC_DIR}
-	pushd ${LINUX_SRC_DIR}
-	git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
-	git fetch --depth 1
-	popd
-    }
-
-    ! [ -f ${HOST_KERNEL_BUILD_DIR}/linux-image-6.1.0-rc4-snp-host_* ] && {
-	pushd ${LINUX_SRC_DIR}
-	git checkout nx-hugepages-fix
-	popd
+    if ! [[ "$(uname -r)" == "6.1.0-rc4-snp-host" ]]; then
+	echo "TEST"
+	! [ -d ${LINUX_SRC_DIR} ] && {
+	    git clone --depth 1 ${LINUX_SRC_URL} ${LINUX_SRC_DIR}
+	    pushd ${LINUX_SRC_DIR}
+	    git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
+	    git fetch --depth 1
+	    popd
+	}
 	
-	echo "Building host kernel"
-	mkdir -p ${HOST_KERNEL_BUILD_DIR}
-	mkdir -p ${HOST_KERNEL_BUILD_DIR}/src
-	pushd ${HOST_KERNEL_BUILD_DIR}
-	make -C ${LINUX_SRC_DIR} mrproper
-	make -C ${LINUX_SRC_DIR} O=${HOST_KERNEL_BUILD_DIR}/src defconfig
-	pushd ${HOST_KERNEL_BUILD_DIR}/src
-	cp /boot/config-$(uname -r) .config
-	scripts/config --disable SYSTEM_TRUSTED_KEYS
-	scripts/config --disable SYSTEM_REVOCATION_KEYS
-	make olddefconfig
-	make -j $(nproc)
-	make -j $(nproc) bindeb-pkg LOCALVERSION=-snp-host DEB_DESTDIR=${HOST_KERNEL_BUILD_DIR}
-	popd
-	
-	echo "Installing host kernel"
-	sudo dpkg -i linux-headers*
-	sudo dpkg -i linux-image-6.1.0-rc4-snp-host_*
-	sudo dpkg -i linux-libc*
-	popd
-
-	pushd ${LINUX_SRC_DIR}/tools/perf
-	make -j $(nproc)
-	cp ./perf ${BIN_DIR}/
-	popd
-    }
+	! [ -f ${HOST_KERNEL_BUILD_DIR}/linux-image-6.1.0-rc4-snp-host_* ] && {
+	    pushd ${LINUX_SRC_DIR}
+	    git checkout nx-hugepages-fix
+	    popd
+	    
+	    echo "Building host kernel"
+	    mkdir -p ${HOST_KERNEL_BUILD_DIR}
+	    mkdir -p ${HOST_KERNEL_BUILD_DIR}/src
+	    pushd ${HOST_KERNEL_BUILD_DIR}
+	    make -C ${LINUX_SRC_DIR} mrproper
+	    make -C ${LINUX_SRC_DIR} O=${HOST_KERNEL_BUILD_DIR}/src defconfig
+	    cd ./src
+	    cp /boot/config-$(uname -r) .config
+	    scripts/config --disable SYSTEM_TRUSTED_KEYS
+	    scripts/config --disable SYSTEM_REVOCATION_KEYS
+	    make olddefconfig
+	    make -j $(nproc)
+	    make -j $(nproc) bindeb-pkg LOCALVERSION=-snp-host DEB_DESTDIR=${HOST_KERNEL_BUILD_DIR}
+	    popd
+	    cd ./tools/perf
+	    make -j $(nproc)
+	    popd
+	}
+    fi
 }
 
 build_qemu()
@@ -223,7 +218,6 @@ build_sev_tool() {
 	echo "Building sev-tool"
 	pushd ${SEV_TOOL_SRC_DIR}
 	autoreconf -vif && ./configure && make
-	sudo cp ./src/sevtool /bin/
 	popd
     }
 }
@@ -237,7 +231,6 @@ build_sev_guest() {
 	echo "Building sev-guest"
 	pushd ${SEV_GUEST_SRC_DIR}
 	make -j $(nproc)
-	sudo cp ${SEV_GUEST_SRC_DIR}/sev-guest-parse-report /bin/
 	popd
     }
 }
@@ -251,7 +244,7 @@ build_snp_host() {
 	echo "Building snp-host"
 	pushd ${SNP_HOST_SRC_DIR}
         cargo build --release
-	sudo cp ${SNP_HOST_SRC_DIR}/target/release/snphost ${BIN_DIR}
+	cp ${SNP_HOST_SRC_DIR}/target/release/snphost ${BIN_DIR}
 	popd
     } 
 }
@@ -280,4 +273,4 @@ build_sev_guest
 build_snp_host
 
 ${ROOT_DIR}/scripts/gen-certs.sh
-${ROOT_DIR}/scripts/setup-attestation-server.sh
+
