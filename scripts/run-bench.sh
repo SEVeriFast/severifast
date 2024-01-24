@@ -148,27 +148,12 @@ setup() {
 }
 
 perf_bench_qemu () {
-    PERF_DATA=/tmp/perf.data
-    PERF_LOG=/tmp/perf.log
-    PERF="./bin/perf"
 
-    sudo rm -rf ${PERF_DATA}
-    sudo rm -rf ${PERF_LOG}
-
-    sudo touch ${PERF_DATA}
-    sudo touch ${PERF_LOG}
-
-    sudo ${PERF} record -a -e kvm:kvm_vmgexit_msr_protocol_enter -e kvm:kvm_pio -e sched:sched_process_exec -o ${PERF_DATA} > /dev/null 2>&1  &
-
-    PERF_PID=$! 2>&1 > /dev/null 
-    sleep 1
-
+    PERF_PID="$(sudo /bin/start_perf.sh)"
     # run qemu
     ${QEMU_RUN} 2>&1 > /dev/null
     
-    sudo pkill perf 2>&1 > /dev/null 
-    wait ${PERF_PID}
-    sudo ${PERF} script -i ${PERF_DATA} | sudo tee ${PERF_LOG} > /dev/null
+    sudo /bin/stop_perf.sh $PERF_PID
 }
 
 parse_results_fc () {
@@ -266,7 +251,6 @@ parse_results_fc () {
 }
 
 parse_results_qemu () {
-    sleep 1
     QEMU_LOG=/tmp/qemu.log
     PERF_LOG=/tmp/perf.log
 
