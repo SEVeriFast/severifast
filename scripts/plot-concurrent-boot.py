@@ -49,7 +49,10 @@ if __name__ == "__main__":
 
     x_axis=[]
     y_axis=[]
-    for i in range(1, 50):
+
+    n = int(len(os.listdir("./data/boot/concurrent/qemu/")) / 2)
+    
+    for i in range(1, n):
         average = plot_all(f"./data/boot/concurrent/qemu/stock-{i}.dat", fig, ax, label = "Stock QEMU")
         y_axis.append(average/1000)
         x_axis.append(i)
@@ -59,7 +62,7 @@ if __name__ == "__main__":
     x_axis=[]
     y_axis=[]
 
-    for i in range(1, 50):
+    for i in range(1, n):
         average = plot_all(f"./data/boot/concurrent/qemu/snp-{i}.dat", fig, ax, label = "QEMU SEV")
         y_axis.append(average/1000)
         x_axis.append(i)
@@ -74,7 +77,7 @@ if __name__ == "__main__":
     plt.subplot(122)
     x_axis=[]
     y_axis=[]
-    for i in range(1, 50):
+    for i in range(1, n):
         average = plot_all(f"./data/boot/concurrent/firecracker/stock-{i}.dat", fig, ax, label = "Stock FC")
         y_axis.append(average/1000)
         x_axis.append(i)
@@ -84,7 +87,7 @@ if __name__ == "__main__":
     x_axis=[]
     y_axis=[]
 
-    for i in range(1, 50):
+    for i in range(1, n):
         average = plot_all(f"./data/boot/concurrent/firecracker/snp-{i}.dat", fig, ax, label = "FC SEV")
         y_axis.append(average/1000)
         x_axis.append(i)

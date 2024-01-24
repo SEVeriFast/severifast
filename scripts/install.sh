@@ -6,6 +6,8 @@ SCRIPT_DIR=$(dirname $(readlink -f $0))
 sudo cp ${SEV_GUEST_SRC_DIR}/sev-guest-parse-report /bin/
 sudo cp ${SEV_TOOL_SRC_DIR}/src/sevtool /bin
 sudo cp ${BIN_DIR}/perf /bin
+sudo cp ${SCRIPT_DIR}/start_perf.sh /bin
+sudo cp ${SCRIPT_DIR}/stop_perf.sh /bin
 
 pushd ${HOST_KERNEL_BUILD_DIR}
 echo "Installing host kernel"
