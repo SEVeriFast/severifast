@@ -116,6 +116,17 @@ build_qemu()
     }
 }
 
+install_rust()
+{
+    # install rust
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+
+    source "$HOME/.cargo/env"
+    # dependencies for building firmware
+    cargo install cargo-binutils
+    rustup component add llvm-tools-preview
+}
+
 build_firecracker()
 {
     ! [ -d ${FC_SRC_DIR} ] && {
@@ -264,6 +275,7 @@ mkdir -p ${SRC_TREE_DIR}
 build_host_kernel
 build_guest_kernels
 build_qemu
+install_rust
 build_firecracker
 build_ovmf
 build_fw
