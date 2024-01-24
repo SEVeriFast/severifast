@@ -214,7 +214,7 @@ build_sev_tool() {
 	git clone ${SEV_TOOL_SRC_URL} ${SEV_TOOL_SRC_DIR}
     }
     
-    ! [ -f /bin/sevtool ] && {
+    ! [ -f ${SEV_TOOL_SRC_DIR}/src/sevtool ] && {
 	echo "Building sev-tool"
 	pushd ${SEV_TOOL_SRC_DIR}
 	autoreconf -vif && ./configure && make
