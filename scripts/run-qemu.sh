@@ -11,26 +11,6 @@ SEV=""
 NET_DEV="tap0"
 INIT="/bin/fc_init"
 
-network_setup() {
-    # create tap for guest
-    HOST_IFACE=$(ip route | grep '^default' | awk '{ print $5 }')
-    MTU=$(ip addr | grep -m 1 eno8303 | awk '{ print $5 }')
-    sudo ip tuntap add ${NET_DEV} mode tap
-    sudo ip addr add 172.16.0.1/24 dev ${NET_DEV}
-    sudo ip link set ${NET_DEV} up
-    sudo ip link set dev ${NET_DEV} mtu $MTU
-    echo 1 | sudo tee /proc/sys/net/ipv4/ip_forward > /dev/null
-    sudo iptables -t nat -A POSTROUTING -o "$HOST_IFACE" -j MASQUERADE
-    sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-    sudo iptables -A FORWARD -i ${NET_DEV} -o ${HOST_IFACE} -j ACCEPT
-
-    if [ "${ATTEST}" == "1" ]; then
-	# set init for doing attestation
-	sudo nginx -s stop > /dev/null 2>&1
-	sudo nginx > /dev/null 2>&1
-    fi
-}
-
 setup () {
     if [ "${SNP}" == "1" ]; then
         NOAPIC="noapic noapictimer"
@@ -106,16 +86,6 @@ run_qemu() {
     wait ${QEMU_PID}
 }
 
-cleanup() {
-    if ! [ "$NO_NET" == "1" ]; then
-	sudo ip link del ${NET_DEV}
-    fi    
-    if [ "${ATTEST}" == "1" ]; then
-	sudo nginx -s stop 2>&1 > /dev/null
-	echo "" | sudo tee /var/www/cgi.log > /dev/null
-    fi
-}
-
 while [ -n "$1" ]; do
 	case "$1" in
     -kernel) 
@@ -160,13 +130,5 @@ if [ ! -f "${KERNEL}" ]; then
     exit 1
 fi
 
-if ! [ "$NO_NET" == "1" ]; then
-    network_setup   
-fi
-
 setup
 run_qemu
-cleanup
-
-
-
