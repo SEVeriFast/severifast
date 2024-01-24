@@ -103,7 +103,7 @@ build_host_kernel()
 build_qemu()
 {
     ! [ -d ${QEMU_SRC_DIR} ] && {
-	git clone --single-branch --branch\
+	git clone --single-branch --depth 1 --branch\
 	    snp ${QEMU_SRC_URL} ${QEMU_SRC_DIR}
     }
 
