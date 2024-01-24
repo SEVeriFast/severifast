@@ -122,9 +122,6 @@ install_rust()
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
 
     source "$HOME/.cargo/env"
-    # dependencies for building firmware
-    cargo install cargo-binutils
-    rustup component add llvm-tools-preview
 }
 
 build_firecracker()
@@ -167,6 +164,11 @@ build_fw() {
     
     ! [ -d ${FW_SRC_DIR} ] && {
 	git clone ${FW_SRC_URL} ${FW_SRC_DIR}
+	pushd ${FW_SRC_DIR}
+	# dependencies for building firmware
+	cargo install cargo-binutils
+	rustup component add llvm-tools-preview
+	popd
     }
     
     ! [ -f ${FW_BUILD} ] && {
