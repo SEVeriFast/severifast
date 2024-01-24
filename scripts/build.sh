@@ -145,7 +145,7 @@ build_ovmf() {
 	git clone --single-branch -b snp-timestamps ${OVMF_SRC_URL} ${OVMF_SRC_DIR}
     }
 
-    ! [ -f ${OVMF_BUILD} ] && {
+    ! [ -f ${BIN_DIR}/AmdSev-1MB.fd ] && {
 	echo "Building OVMF"
 	pushd ${OVMF_SRC_DIR}
 	git checkout snp-timestamps
