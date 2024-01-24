@@ -1,7 +1,11 @@
-#/bin/sh
+#!/bin/bash
+
+SCRIPT_DIR=$(dirname $(readlink -f $0))
+. ${SCRIPT_DIR}/common
+
 # dependencies for building linux
 sudo apt update
-sudo apt install -y build-essential flex bison libelf-dev libssl-dev lz4 ca-certificates curl gnupg ninja-build pkg-config libglib2.0-dev libpixman-1-dev nginx python-is-python3 mtools nasm iasl nginx fcgiwrap autoconf uuid-dev zip debhelper dh-virtualenv libpfm4-dev libtraceevent-dev libtraceevent-devel python3-matplotlib python3-seaborn
+sudo apt install -y build-essential flex bison libelf-dev libssl-dev lz4 ca-certificates curl gnupg ninja-build pkg-config libglib2.0-dev libpixman-1-dev nginx python-is-python3 mtools nasm iasl nginx fcgiwrap autoconf uuid-dev zip debhelper dh-virtualenv libpfm4-dev libtraceevent-dev python3-matplotlib python3-seaborn
 # setup to install docker
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --yes --dearmor -o /etc/apt/keyrings/docker.gpg
@@ -24,4 +28,13 @@ source "$HOME/.cargo/env"
 cargo install cargo-binutils
 rustup component add llvm-tools-preview
 
-sudo ${SCRIPT_DIR}/cfg_groups.sh
+sudo cp ${SEV_GUEST_SRC_DIR}/sev-guest-parse-report /bin/
+sudo cp ${SEV_TOOL_SRC_DIR}/src/sevtool /bin
+sudo cp ${BIN_DIR}/perf /bin
+
+pushd ${HOST_KERNEL_BUILD_DIR}
+echo "Installing host kernel"
+sudo dpkg -i linux-headers*
+sudo dpkg -i linux-image-6.1.0-rc4-snp-host_*
+sudo dpkg -i linux-libc*
+popd
