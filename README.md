@@ -13,9 +13,11 @@ These artifacts have been tested on a machine running Ubuntu 22.04 and uses `apt
 
 ## Running Experiments
 1. Clone this repository.
-2. Run `./scripts/install.sh`. This will install the dependencies needed to build components for running experiments and give you access to `/dev/kvm`, `/dev/sev`, and docker.
-3. Run `./scripts/build.sh` to build the necessary components. This script builds the host kernel, the guest kernels used in the experiments with the configurations provided in `./kernel-configs`, Firecracker, the SEVeriFast boot verifier, QEMU, OVMF, and SEV tooling required to generate certificates and validate attestation reports.
-4. Run `./scripts/run-all.sh` to run the experiments used in the paper. Upon successful completion, the data collected will be placed in `./data` and figures will be generated from the new data and placed in `./figs/`. `./figs/paper` contains the plots used in the paper which should be compared to the new plots to validate results.
+2. Run `./scripts/install-build-deps.sh`. This will install dependencies needed to build required components. (Requires `sudo`)
+3. Run `./scripts/build.sh` to build the host kernel, the guest kernels used in the experiments with the configurations provided in `./kernel-configs`, Firecracker, the SEVeriFast boot verifier, QEMU, OVMF, and SEV tooling required to generate certificates and validate attestation reports.
+4. Run `./scripts/install.sh` to install the host kernel and SEV tools. (Requires `sudo`)
+5. Run `./scripts/setup.sh` to configure access to `/dev/kvm`, `/dev/sev`, and docker. This will also set up the attestation server and networking for VMs. (Requires `sudo`)
+6. Run `./scripts/run-all.sh` to run the experiments used in the paper. Upon successful completion, the data collected will be placed in `./data` and figures will be generated from the new data and placed in `./figs/`. `./figs/paper` contains the plots used in the paper which should be compared to the new plots to validate results.
 
 ## Repo Structure
 ```
