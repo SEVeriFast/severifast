@@ -3,28 +3,9 @@
 SCRIPT_DIR=$(dirname $(readlink -f $0))
 . ${SCRIPT_DIR}/common
 
-PERF=${BIN_DIR}/perf
+PERF=/bin/perf
 PERF_DATA=/tmp/perf.data
 PERF_LOG=/tmp/perf.log
-
-start_perf() {
-    sudo rm -rf ${PERF_DATA}
-    sudo rm -rf ${PERF_LOG}
-
-    sudo touch ${PERF_DATA}
-    sudo touch ${PERF_LOG}
-
-    sudo ${PERF} record -a -e kvm:kvm_vmgexit_msr_protocol_enter -e kvm:kvm_pio -e sched:sched_process_exec -e sched:sched_process_fork -o ${PERF_DATA} > /dev/null 2>&1  &
-
-    PERF_PID=$! > /dev/null 2>&1 
-    sleep 1
-}
-
-stop_perf() {
-    sudo kill ${PERF_PID} > /dev/null 2>&1
-    wait ${PERF_PID}
-    sudo ${PERF} script -i ${PERF_DATA} | sudo tee ${PERF_LOG} > /dev/null
-}
 
 convert_to_µs () {
     #milliseconds
@@ -75,7 +56,7 @@ run_qemu() {
     echo "QEMU: spawning ${NUM_VMS} VMs ${SNP}"
     echo -ne '\r'
 
-    start_perf
+    PERF_PID="$(sudo /bin/start_perf.sh)"
 
     VMS=0
     until [ $VMS -eq $NUM_VMS ]
@@ -102,8 +83,8 @@ run_qemu() {
     echo "All VMs completed"
     echo -ne "\r"
 
-    stop_perf
-
+    sudo /bin/stop_perf.sh $PERF_PID
+    
     all_times=0
     while read pid; do
         exec=$(grep $pid $PERF_LOG | grep "sched_process_exec" | awk '{print $4}' )
