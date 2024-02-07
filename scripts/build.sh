@@ -141,6 +141,8 @@ build_firecracker()
 }
 
 build_ovmf() {
+    mkdir -p ${BIN_DIR}
+
     ! [ -d ${OVMF_SRC_DIR} ] && {
 	git clone --single-branch -b snp-timestamps ${OVMF_SRC_URL} ${OVMF_SRC_DIR}
     }
